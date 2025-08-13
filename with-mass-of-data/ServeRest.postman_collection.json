@@ -1,0 +1,1160 @@
+{
+	"info": {
+		"_postman_id": "6a23a81b-16ce-4cd7-b514-78d9b18e2012",
+		"name": "ServeRest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10481069"
+	},
+	"item": [
+		{
+			"name": "Cadastrar usuário",
+			"item": [
+				{
+					"name": "Cadastrar novo usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"\r",
+									"// --- Error parsing JSON ---\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Response must be a valid JSON\", function(){\r",
+									"        throw new Error(`Response is not a valid JSON`);\r",
+									"    });\r",
+									"\r",
+									"    return\r",
+									"};\r",
+									"\r",
+									"\r",
+									"// --- Status request ---\r",
+									"pm.test(\"Status code is a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code should be 201\", function() {\r",
+									"    pm.expect(pm.response.code).to.be.eql(201);\r",
+									"});\r",
+									"\r",
+									"// Ajuda do chatgpt para melhoria\r",
+									"// Parece que quanto mais separado, os teste, melhor a vizualição em um relatório\r",
+									"// por isso é uma boa prática separar testes\r",
+									"\r",
+									"\r",
+									"// --- Response Structure ---\r",
+									"// Sempre bom testar a resposta para não dar um falso negativo em outros testes\r",
+									"// além de testar se estamos recebendo o tipo certo\r",
+									"pm.test(\"The response must be a object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"// Chatgpt -> Bom para proteção contra mudanças de contrato da API\r",
+									"pm.test(\"The response must have the expected properties\", function(){\r",
+									"    pm.expect(objResponse).to.have.property(\"message\");\r",
+									"    pm.expect(objResponse).to.have.property(\"_id\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// --- Response content ---\r",
+									"pm.test(\"The response message should be 'Cadastro realizado com sucesso'\", function(){\r",
+									"    pm.expect(objResponse.message).to.be.eql(\"Cadastro realizado com sucesso\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The response must have a valid ID\", function(){\r",
+									"    pm.expect(objResponse._id).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// --- Save ID to use in other requests ---\r",
+									"pm.globals.set('userID', objResponse._id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let name = pm.iterationData.get('userName');\r",
+									"let email = pm.iterationData.get('userEmail');\r",
+									"let password = pm.iterationData.get('userPassword');\r",
+									"let administrator = pm.iterationData.get('userAdministrator');\r",
+									"\r",
+									"pm.globals.set(\"userName\", name);\r",
+									"pm.globals.set(\"userEmail\", email);\r",
+									"pm.globals.set(\"userPassword\", password);\r",
+									"pm.globals.set(\"userAdministrator\", administrator);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{userName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{userPassword}}\",\r\n    \"administrador\": \"{{userAdministrator}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "E-mail já cadastrado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"\r",
+									"// --- Error parsing JSON ---\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Response must be a valid JSON\", function(){\r",
+									"        throw new Error(`Response is not a valid JSON`);\r",
+									"    });\r",
+									"\r",
+									"    return\r",
+									"};\r",
+									"\r",
+									"\r",
+									"// --- Status request ---\r",
+									"pm.test(\"Status code is a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code should be 400\", function() {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// --- Response Structure ---\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must have the expected properties\", function(){\r",
+									"    pm.expect(objResponse).to.have.property(\"message\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// --- Response content ---\r",
+									"pm.test(\"Error message should be 'Este email já está sendo usado'\", function(){\r",
+									"    pm.expect(objResponse.message).to.eql(\"Este email já está sendo usado\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{userName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{userPassword}}\",\r\n    \"administrador\": \"{{userAdministrator}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Listar usuários",
+			"item": [
+				{
+					"name": "Todos os usuários cadastrados",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const Ajv = require('ajv');\r",
+									"const ajv = new Ajv();\r",
+									"\r",
+									"let objResponse = {};\r",
+									"\r",
+									"// --- Parsing JSON ---\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Response is not a valid JSON\", function(){\r",
+									"        throw new Error(\"Error parsing JSON.\");\r",
+									"    });\r",
+									"    return;\r",
+									"};\r",
+									"\r",
+									"// --- Status request ---\r",
+									"pm.test(\"Status code is a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code should be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"// --- Response structure ---\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must have 1 or more users\", function(){\r",
+									"    pm.expect(objResponse.quantidade).to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must match the expected JSON SCHEMA\", function(){\r",
+									"    const schema = pm.collectionVariables.get('schemaUsuarios');\r",
+									"    const valid = ajv.validate(schema, objResponse);\r",
+									"\r",
+									"\r",
+									"    pm.expect(valid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"// --- Deletes the schema variable from the collection ---\r",
+									"pm.collectionVariables.unset(\"schemaUsuarios\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuários por parâmetro",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const Ajv = require('ajv');\r",
+									"const ajv = new Ajv();\r",
+									"\r",
+									"let objResponse = {};\r",
+									"// --- Parsing JSON ---\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Response is not a valid JSON\", function(){\r",
+									"        throw new Error(\"Error parsing JSON.\");\r",
+									"    });\r",
+									"    return;\r",
+									"};\r",
+									"\r",
+									"// --- Status request ---\r",
+									"pm.test(\"Status code is a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code should be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"// --- Response structure ---\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must match the expected JSON SCHEMA\", function(){\r",
+									"    const schema = pm.collectionVariables.get('schemaUsuarios');\r",
+									"    const valid = ajv.validate(schema, objResponse);\r",
+									"\r",
+									"    pm.expect(valid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response ID must match te request ID\", function(){\r",
+									"    pm.expect(objResponse.usuarios[0]._id).to.eql(pm.globals.get('userID'));\r",
+									"});\r",
+									"\r",
+									"// --- Deletes the schema variable from the collection ---\r",
+									"pm.collectionVariables.unset(\"schemaUsuarios\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios?_id={{userID}}&nome={{userName}}&email={{userEmail}}&password={{userPassword}}&administrador={{userAdministrator}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							],
+							"query": [
+								{
+									"key": "_id",
+									"value": "{{userID}}"
+								},
+								{
+									"key": "nome",
+									"value": "{{userName}}"
+								},
+								{
+									"key": "email",
+									"value": "{{userEmail}}"
+								},
+								{
+									"key": "password",
+									"value": "{{userPassword}}"
+								},
+								{
+									"key": "administrador",
+									"value": "{{userAdministrator}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuário por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const Ajv = require('ajv');\r",
+									"const ajv = new Ajv();\r",
+									"\r",
+									"let objResponse = {};\r",
+									"\r",
+									"// --- Parsing JSON ---\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Response is not a valid JSON\", function(){\r",
+									"        throw new Error(\"Error parsing JSON.\");\r",
+									"    });\r",
+									"    return;\r",
+									"};\r",
+									"\r",
+									"// --- Status request ---\r",
+									"pm.test(\"Status code is a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code should be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"// --- Response structure ---\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must match the expected JSON SCHEMA\", function(){\r",
+									"    const schema = pm.globals.get('schemaUsuario');\r",
+									"    const valid = ajv.validate(schema, objResponse);\r",
+									"\r",
+									"    pm.expect(valid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"// --- Response content ---\r",
+									"pm.test(\"Response ID must be the same as the request ID\", function(){\r",
+									"    const usuario_ID_resposta = objResponse._id;\r",
+									"    const usuario_ID_requisicao = pm.globals.get('userID');\r",
+									"    pm.expect(usuario_ID_resposta).to.eql(usuario_ID_requisicao);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set('schemaUsuario',{\r",
+									"    \"type\": \"object\",\r",
+									"    \"required\": [\"_id\", \"nome\", \"email\", \"password\", \"administrador\"],\r",
+									"    \"properties\": {\r",
+									"        \"_id\": { \"type\": \"string\" },\r",
+									"        \"nome\": { \"type\": \"string\" },\r",
+									"        \"email\": { \"type\": \"string\", \"format\": \"email\" },\r",
+									"        \"password\": { \"type\": \"string\" },\r",
+									"        \"administrador\": { \"type\": \"string\", \"enum\": [\"true\", \"false\"] }\r",
+									"    },\r",
+									"    \"additionalProperties\": false\r",
+									"    }\r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuário por ID inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const Ajv = require('ajv');\r",
+									"const ajv = new Ajv();\r",
+									"\r",
+									"let objResponse = {};\r",
+									"\r",
+									"// --- Parsing JSON ---\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Response is not a valid JSON\", function(){\r",
+									"        throw new Error(\"Error parsing JSON.\");\r",
+									"    });\r",
+									"    return;\r",
+									"};\r",
+									"\r",
+									"// --- Status request ---\r",
+									"pm.test(\"Status code is a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code should be 400\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"// --- Response structure ---\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must match the expected JSON SCHEMA\", function(){\r",
+									"    const schema = {\r",
+									"        \"type\": \"object\",\r",
+									"        \"required\": [\"message\"],\r",
+									"        \"properties\": {\r",
+									"            \"message\": {\r",
+									"            \"type\": \"string\",\r",
+									"            \"const\": \"Usuário não encontrado\"\r",
+									"            }\r",
+									"        },\r",
+									"        \"additionalProperties\": false\r",
+									"    };\r",
+									"    const valid = ajv.validate(schema, objResponse);\r",
+									"\r",
+									"    pm.expect(valid).to.be.true;\r",
+									"});\r",
+									"\r",
+									"// --- Response content ---\r",
+									"pm.test(\"Response must have a message equal 'Usuário não encontrado'\", function(){\r",
+									"    pm.expect(objResponse.message).to.eql(\"Usuário não encontrado\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/1234567891234567",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"1234567891234567"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"pm.collectionVariables.set( \"schemaUsuarios\",\r",
+							"    {\r",
+							"        \"type\": \"object\",\r",
+							"        \"required\": [\"quantidade\", \"usuarios\"],\r",
+							"        \"properties\": {\r",
+							"            \"quantidade\": {\r",
+							"            \"type\": \"integer\"\r",
+							"            },\r",
+							"            \"usuarios\": {\r",
+							"            \"type\": \"array\",\r",
+							"            \"items\": {\r",
+							"                \"type\": \"object\",\r",
+							"                \"required\": [\"nome\", \"email\", \"password\", \"administrador\", \"_id\"],\r",
+							"                \"properties\": {\r",
+							"                \"nome\": { \"type\": \"string\" },\r",
+							"                \"email\": { \"type\": \"string\", \"format\": \"email\" },\r",
+							"                \"password\": { \"type\": \"string\" },\r",
+							"                \"administrador\": { \"type\": \"string\", \"enum\": [\"true\", \"false\"] },\r",
+							"                \"_id\": { \"type\": \"string\", \"minLength\": 1 }\r",
+							"                },\r",
+							"                \"additionalProperties\": false\r",
+							"            }\r",
+							"            }\r",
+							"        },\r",
+							"        \"additionalProperties\": false\r",
+							"    }\r",
+							");"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Editar usuário",
+			"item": [
+				{
+					"name": "Gerar dados do usuário para alteração",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"let objUserData = {};\r",
+									"\r",
+									"try{\r",
+									"    objUserData = pm.response.json().results[0];\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Parsing JSON error\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"    return\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objUserData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must not be empty\", function(){\r",
+									"    pm.expect(objResponse).to.have.keys(\"results\", \"info\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be the keys 'name', email, login\", function(){\r",
+									"    pm.expect(objUserData).to.include.keys(\"name\", \"email\", \"login\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response first name must not be empty\", function(){\r",
+									"    pm.expect(objUserData.name.first).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response email must not be empty\", function(){\r",
+									"    pm.expect(objUserData.email).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response login password must not be empty\", function(){\r",
+									"    pm.expect(objUserData.login.password).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Criando as variaveis globais para uso nas requisições futuras\r",
+									"pm.globals.set(\"userName\", objUserData.name.first);\r",
+									"pm.globals.set(\"userEmail\", objUserData.email);\r",
+									"pm.globals.set(\"userPassword\", objUserData.login.password);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://randomuser.me/api/",
+							"protocol": "https",
+							"host": [
+								"randomuser",
+								"me"
+							],
+							"path": [
+								"api",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar usuário existente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"\r",
+									"// Try parsing JSON\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"} catch(error){\r",
+									"    pm.test(\"Response must be a valid JSON\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"// Status Code\r",
+									"pm.test(\"Response must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"pm.test(\"Response must be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"// Estrutura da resposta\r",
+									"pm.test(\"Response must be an Object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response don't be empty\", function(){\r",
+									"    pm.expect(objResponse).to.have.keys(\"message\");\r",
+									"});\r",
+									"\r",
+									"// Dados da resposta\r",
+									"pm.test(\"Response message must be 'Registro alterado com sucesso'\", function(){\r",
+									"    pm.expect(objResponse.message).to.eql(\"Registro alterado com sucesso\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{userName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{userPassword}}\",\r\n    \"administrador\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objReponse = {};\r",
+									"\r",
+									"try{\r",
+									"    objReponse = pm.response.json();\r",
+									"}catch(error){\r",
+									"    pm.test(\"Parsing JSON error\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be an object\", function(){\r",
+									"    pm.expect(objReponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must include the 'message' key\", function(){\r",
+									"    pm.expect(objReponse).to.have.keys(\"message\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message must be 'Registro excluído com sucesso'\", function(){\r",
+									"    pm.expect(objReponse.message).to.eql(\"Registro excluído com sucesso\");\r",
+									"});\r",
+									"\r",
+									"pm.globals.unset('userID');"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gerar dados do usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"let objUserData = {};\r",
+									"\r",
+									"try{\r",
+									"    objUserData = pm.response.json().results[0];\r",
+									"    objResponse = pm.response.json();\r",
+									"}\r",
+									"catch(error){\r",
+									"    pm.test(\"Parsing JSON error\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"    return\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objUserData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must not be empty\", function(){\r",
+									"    pm.expect(objResponse).to.have.keys(\"results\", \"info\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be the keys 'name', email, login\", function(){\r",
+									"    pm.expect(objUserData).to.include.keys(\"name\", \"email\", \"login\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response first name must not be empty\", function(){\r",
+									"    pm.expect(objUserData.name.first).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response email must not be empty\", function(){\r",
+									"    pm.expect(objUserData.email).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response login password must not be empty\", function(){\r",
+									"    pm.expect(objUserData.login.password).to.be.a('string').and.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Criando as variaveis globais para uso nas requisições futuras\r",
+									"pm.globals.set(\"userName\", objUserData.name.first);\r",
+									"pm.globals.set(\"userEmail\", objUserData.email);\r",
+									"pm.globals.set(\"userPassword\", objUserData.login.password);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://randomuser.me/api/",
+							"protocol": "https",
+							"host": [
+								"randomuser",
+								"me"
+							],
+							"path": [
+								"api",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastra se usuário inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"\r",
+									"// Try parsing JSON\r",
+									"try{\r",
+									"    objResponse = pm.response.json();\r",
+									"} catch(error){\r",
+									"    pm.test(\"Response must be a valid JSON\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"// Status Code\r",
+									"pm.test(\"Response must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"pm.test(\"Response must be 201\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"// Estrutura e dados da resposta\r",
+									"pm.test(\"Response must be an Object\", function(){\r",
+									"    pm.expect(objResponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response don't be empty\", function(){\r",
+									"    pm.expect(objResponse).to.have.keys(\"message\", \"_id\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message must be 'Cadastro realizado com sucesso'\", function(){\r",
+									"    pm.expect(objResponse.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"});\r",
+									"\r",
+									"// Salva o id do usuário\r",
+									"pm.globals.set('userID', objResponse._id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{userName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{userPassword}}\",\r\n    \"administrador\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Excluir usuário",
+			"item": [
+				{
+					"name": "Excluir usuário existente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"\r",
+									"try{\r",
+									"    objReponse = pm.response.json();\r",
+									"} catch(error) {\r",
+									"    pm.test(\"Parsing JSON error\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response code must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response code must be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objReponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must have a key 'message'\", function(){\r",
+									"    pm.expect(objReponse).to.have.keys(\"message\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message must be 'Registro excluído com sucesso\", function(){\r",
+									"    pm.expect(objReponse.message).to.eql(\"Registro excluído com sucesso\")\r",
+									"});\r",
+									"\r",
+									"pm.globals.unset('userID');"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuário inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let objResponse = {};\r",
+									"\r",
+									"try{\r",
+									"    objReponse = pm.response.json();\r",
+									"} catch(error) {\r",
+									"    pm.test(\"Parsing JSON error\", function(){\r",
+									"        throw new Error(\"Response is not a valid JSON\");\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Response code must be a number\", function(){\r",
+									"    pm.expect(pm.response.code).to.be.a('number');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response code must be 200\", function(){\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must be a object\", function(){\r",
+									"    pm.expect(objReponse).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response must have a key 'message'\", function(){\r",
+									"    pm.expect(objReponse).to.have.keys(\"message\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message must be 'Nenhum registro excluído\", function(){\r",
+									"    pm.expect(objReponse.message).to.eql(\"Nenhum registro excluído\")\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "urlParams",
+			"value": ""
+		},
+		{
+			"key": "schemaUsuarios",
+			"value": ""
+		}
+	]
+}
