@@ -29,8 +29,8 @@ jobs:                              # O conjunto de trabalhos(jobs)
         
         # Exemplo certo:
         run: |
-          npm install -g newman
-          npm install -g newman-reporter-htmlextra
+          npm install newman
+          npm install newman-reporter-htmlextra
 
       - name: Rodar testes com massa de dados                                      # Aqui romados os testes do newman e geramos o relatório do htmlextra e exportamos ele com o nome "ServeRest1.html".
         run: npx newman run ./with-mass-of-data/ServeRest.postman_collection.json \
