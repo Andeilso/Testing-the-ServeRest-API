@@ -13,10 +13,10 @@ jobs:                              # O conjunto de trabalhos(jobs)
       - name: Code Checkout        # Verificação de Código(Code Checkout). Depois do name é uma etiqueta(tag). Eu dei esse nome, porque o comando abaixo faz isso, verifica/baixa o código do seu repositório
         uses: actions/checkout@v3  # Comando que verifica/baixa seu código para o sistema que ele mona com ubuntu
 
-      - name: Instalar Node        # Mesma coisa, uma etiqueta(tag) que escrevi para aquele passo.
-        uses: action/setup-node@v3 # uses(use/usa). O que o passo vai fazer, aqui uma pre configuração do github actions está sendo usado para intalar o node
-        with:                      # Com
-          node-version: '22'       # a versão 22. Aqui no caso eu quero que o git intale o node e digo que quero a versão 22 do node.
+      - name: Instalar Node         # Mesma coisa, uma etiqueta(tag) que escrevi para aquele passo.
+        uses: actions/setup-node@v3 # uses(use/usa). O que o passo vai fazer, aqui uma pre configuração do github actions está sendo usado para intalar o node
+        with:                       # Com
+          node-version: '22'        # a versão 22. Aqui no caso eu quero que o git intale o node e digo que quero a versão 22 do node.
 
       - name: Instalar newman e o gerador de relatório  # Eitqueta(tag) - você define
         # run(rode). Aqui podemos usar comandos que usamos em terminal. Se digitarmos '|' transformamos o run para receber um bloco de script
