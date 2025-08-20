@@ -1,0 +1,55 @@
+name: Newman run
+
+on:                       # Quando
+  push:                   # houver alterações(push)
+    branches:             # na linha(branch)
+      -main               # branch/linha = main
+                          # Você roda as configurações abaixo
+
+jobs:                              # O conjunto de trabalhos(jobs)
+  executando_testes:               # Essa tag é um "job"(trabalho), mas a palavra 'executando_testes' é apenas uma etiqueta(tag), é você que da o nome pro trabalho, nesse caso eu dei o nome de 'executando_testes'
+    runs-on: ubuntu-latest         # Onde vai rodar seu projeto ou sistema do projeto. runs-on(Rode em) uma imagem do ubuntu na ultima versão(latest)
+    steps:                         # Passos(steps). Daqui pra baixo, dentro da hierarquia, são os passos que o actions irá dar
+      - name: Code Checkout        # Verificação de Código(Code Checkout). Depois do name é uma etiqueta(tag). Eu dei esse nome, porque o comando abaixo faz isso, verifica/baixa o código do seu repositório
+        uses: actions/checkout@v3  # Comando que verifica/baixa seu código para o sistema que ele mona com ubuntu
+
+      - name: Instalar Node        # Mesma coisa, uma etiqueta(tag) que escrevi para aquele passo.
+        uses: action/setup-node@v3 # uses(use/usa). O que o passo vai fazer, aqui uma pre configuração do github actions está sendo usado para intalar o node
+        with:                      # Com
+          node-version: '22'       # a versão 22. Aqui no caso eu quero que o git intale o node e digo que quero a versão 22 do node.
+
+      - name: Instalar newman e o gerador de relatório  # Eitqueta(tag) - você define
+        # run(rode). Aqui podemos usar comandos que usamos em terminal. Se digitarmos '|' transformamos o run para receber um bloco de script
+        # Sem o '|' o run aceitaria apenas uma instrução, e colocar mais run abaixo não funciona, ele considera apenas o ultimo run
+        
+        # Exemplo errado:
+        # run: npm install -g newman
+        # run: npm install -g newman-reporter-htmlextra
+          # O 'run' só vai considerar o ultimo run, no caso apenas o newman seria instalado, mas como newman é uma dependencia provavelmente não iria funionar
+        
+        # Exemplo certo:
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: Rodar testes com massa de dados                                      # Aqui romados os testes do newman e geramos o relatório do htmlextra e exportamos ele com o nome "ServeRest1.html".
+        run: newman run ./with-mass-of-data/ServeRest.postman_collection.json \
+          -e ./with-mass-of-data/serverest.postman_environment.json \
+          -d ./with-mass-of-data/mass-of-data.csv \
+          -r cli,htmlextra \
+          --reporter-htmlextra-export "ServeRest1.html"
+
+      - name: Rodar testes sem massa de dados
+        run: newman run ./without-mass-of-data/ServeRest2.postman_collection.json \
+          -e ./without-mass-of-data/serverest2.postman_environment.json \
+          -r cli,htmlextra \
+          --reporter-htmlextra-export "ServeRest2.html"
+
+      - name: Upload dos relatórios
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-newman
+          path: |
+            ServeRest.html
+            ServeRest2.html
+          
