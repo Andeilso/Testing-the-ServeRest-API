@@ -3,8 +3,8 @@ name: Newman run
 on:                       # Quando
   push:                   # houver alterações(push)
     branches:             # na linha(branch)
-      -main               # branch/linha = main
-                          # Você roda as configurações abaixo
+      -main               # branch/linha = main. Você roda as configurações abaixo.
+  workflow_dispatch:      # Adiciona um botão para rodar a esteira manualmente.
 
 jobs:                              # O conjunto de trabalhos(jobs)
   executando_testes:               # Essa tag é um "job"(trabalho), mas a palavra 'executando_testes' é apenas uma etiqueta(tag), é você que da o nome pro trabalho, nesse caso eu dei o nome de 'executando_testes'
@@ -37,7 +37,7 @@ jobs:                              # O conjunto de trabalhos(jobs)
           -e ./with-mass-of-data/serverest.postman_environment.json \
           -d ./with-mass-of-data/mass-of-data.csv \
           -r cli,htmlextra \
-          --reporter-htmlextra-export "ServeRest1.html"
+          --reporter-htmlextra-export "ServeRest.html"
 
       - name: Rodar testes sem massa de dados
         run: newman run ./without-mass-of-data/ServeRest2.postman_collection.json \
