@@ -13,6 +13,9 @@ jobs:                              # O conjunto de trabalhos(jobs)
       - name: Code Checkout        # Verificação de Código(Code Checkout). Depois do name é uma etiqueta(tag). Eu dei esse nome, porque o comando abaixo faz isso, verifica/baixa o código do seu repositório
         uses: actions/checkout@v3  # Comando que verifica/baixa seu código para o sistema que ele mona com ubuntu
 
+      - name: Criar pasta de artefatos
+        run: mkdir -p test_reports
+        
       - name: Instalar Node         # Mesma coisa, uma etiqueta(tag) que escrevi para aquele passo.
         uses: actions/setup-node@v3 # uses(use/usa). O que o passo vai fazer, aqui uma pre configuração do github actions está sendo usado para intalar o node
         with:                       # Com
@@ -32,27 +35,22 @@ jobs:                              # O conjunto de trabalhos(jobs)
           npm install newman
           npm install newman-reporter-htmlextra
 
-      - name: Listar arquivos
-        run: ls -R
-
       - name: Rodar testes com massa de dados                                      # Aqui romados os testes do newman e geramos o relatório do htmlextra e exportamos ele com o nome "ServeRest1.html".
         run: npx newman run ./with-mass-of-data/ServeRest.postman_collection.json \
           -e ./with-mass-of-data/serverest.postman_environment.json \
           -d ./with-mass-of-data/mass-of-data.csv \
           -r cli,htmlextra \
-          --reporter-htmlextra-export "ServeRest.html"
+          --reporter-htmlextra-export "./artifacts/ServeRest.html"
 
       - name: Rodar testes sem massa de dados
         run: npx newman run ./without-mass-of-data/ServeRest2.postman_collection.json \
           -e ./without-mass-of-data/serverest2.postman_environment.json \
           -r cli,htmlextra \
-          --reporter-htmlextra-export "ServeRest2.html"
+          --reporter-htmlextra-export "./artifacts/ServeRest2.html"
 
       - name: Upload dos relatórios
         uses: actions/upload-artifact@v4
         with:
           name: relatorios-newman
-          path: |
-            ServeRest.html
-            ServeRest2.html
+          path: test_reports/*.html
           
