@@ -33,14 +33,14 @@ jobs:                              # O conjunto de trabalhos(jobs)
           npm install -g newman-reporter-htmlextra
 
       - name: Rodar testes com massa de dados                                      # Aqui romados os testes do newman e geramos o relatório do htmlextra e exportamos ele com o nome "ServeRest1.html".
-        run: newman run ./with-mass-of-data/ServeRest.postman_collection.json \
+        run: npx newman run ./with-mass-of-data/ServeRest.postman_collection.json \
           -e ./with-mass-of-data/serverest.postman_environment.json \
           -d ./with-mass-of-data/mass-of-data.csv \
           -r cli,htmlextra \
           --reporter-htmlextra-export "ServeRest.html"
 
       - name: Rodar testes sem massa de dados
-        run: newman run ./without-mass-of-data/ServeRest2.postman_collection.json \
+        run: npx newman run ./without-mass-of-data/ServeRest2.postman_collection.json \
           -e ./without-mass-of-data/serverest2.postman_environment.json \
           -r cli,htmlextra \
           --reporter-htmlextra-export "ServeRest2.html"
