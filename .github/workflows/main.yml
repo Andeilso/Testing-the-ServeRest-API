@@ -35,18 +35,11 @@ jobs:                              # O conjunto de trabalhos(jobs)
           npm install newman
           npm install newman-reporter-htmlextra
 
-      - name: Rodar testes com massa de dados                                      # Aqui romados os testes do newman e geramos o relatório do htmlextra e exportamos ele com o nome "ServeRest1.html".
-        run: npx newman run ./with-mass-of-data/ServeRest.postman_collection.json \
-          -e ./with-mass-of-data/serverest.postman_environment.json \
-          -d ./with-mass-of-data/mass-of-data.csv \
-          -r cli,htmlextra \
-          --reporter-htmlextra-export "./test_reports/ServeRest.html"
+      - name: Rodar testes com massa de dados   # Aqui romados os testes do newman e geramos o relatório do htmlextra e exportamos ele com o nome "ServeRest1.html".
+        run: npx newman run ./with-mass-of-data/ServeRest.postman_collection.json -e ./with-mass-of-data/serverest.postman_environment.json -d ./with-mass-of-data/mass-of-data.csv -r cli,htmlextra --reporter-htmlextra-export "./test_reports/ServeRest.html"
 
       - name: Rodar testes sem massa de dados
-        run: npx newman run ./without-mass-of-data/ServeRest2.postman_collection.json \
-          -e ./without-mass-of-data/serverest2.postman_environment.json \
-          -r cli,htmlextra \
-          --reporter-htmlextra-export "./test_reports/ServeRest2.html"
+        run: npx newman run ./without-mass-of-data/ServeRest2.postman_collection.json -e ./without-mass-of-data/serverest2.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export "./test_reports/ServeRest2.html"
 
       - name: Upload dos relatórios
         uses: actions/upload-artifact@v4
