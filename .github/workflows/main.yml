@@ -1,5 +1,5 @@
 name: Newman run
-
+ 
 on:                       # Quando
   push:                   # houver alterações(push)
     branches:             # na linha(branch)
